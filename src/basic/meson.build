@@ -5,7 +5,7 @@ version_h = vcs_tag(
         input : 'version.h.in',
         output : 'version.h')
 
-basic_sources = files('''
+basic_sources_strv = '''
         MurmurHash2.c
         MurmurHash2.h
         af-list.c
@@ -214,7 +214,9 @@ basic_sources = files('''
         virt.h
         xattr-util.c
         xattr-util.h
-'''.split())
+'''.split()
+
+basic_sources = files(basic_sources_strv)
 
 basic_sources += version_h
 
@@ -314,3 +316,21 @@ libbasic_gcrypt = static_library(
         include_directories : includes,
         dependencies : [libgcrypt],
         c_args : ['-fvisibility=default'])
+
+foreach header : basic_sources_strv
+        if header.split('.')[-1] != 'h'
+                continue
+        endif
+        if want_tests == 'false'
+                continue
+        endif
+        name = ''.join(['cc-', header.split('/')[-1]])
+        additional_opts = []
+        if header == 'btrfs-util.h'
+                additional_opts = ['-I', join_paths(meson.source_root(), 'src/systemd')]
+        endif
+        test(name,
+             check_compilation_sh,
+             args : cc.cmd_array() + ['-c', '-x', 'c', '-Werror', '-include', config_h, '-I', meson.current_build_dir()]
+                    + additional_opts + ['-include', join_paths(meson.current_source_dir(), header)])
+endforeach
