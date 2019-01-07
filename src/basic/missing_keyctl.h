@@ -2,6 +2,7 @@
 #pragma once
 
 #include <linux/keyctl.h>
+#include <stdint.h>
 
 #ifndef KEYCTL_JOIN_SESSION_KEYRING
 #define KEYCTL_JOIN_SESSION_KEYRING 1
