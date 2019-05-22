@@ -13,6 +13,7 @@
 #include "netdev/dummy.h"
 #include "netdev/fou-tunnel.h"
 #include "netdev/geneve.h"
+#include "netdev/ipoib.h"
 #include "netdev/ipvlan.h"
 #include "netdev/l2tp-tunnel.h"
 #include "netdev/macsec.h"
@@ -70,6 +71,7 @@ const NetDevVTable * const netdev_vtable[_NETDEV_KIND_MAX] = {
         [NETDEV_KIND_ERSPAN] = &erspan_vtable,
         [NETDEV_KIND_L2TP] = &l2tptnl_vtable,
         [NETDEV_KIND_MACSEC] = &macsec_vtable,
+        [NETDEV_KIND_IPOIB] = &ipoib_vtable,
 };
 
 static const char* const netdev_kind_table[_NETDEV_KIND_MAX] = {
@@ -104,6 +106,7 @@ static const char* const netdev_kind_table[_NETDEV_KIND_MAX] = {
         [NETDEV_KIND_ERSPAN] = "erspan",
         [NETDEV_KIND_L2TP] = "l2tp",
         [NETDEV_KIND_MACSEC] = "macsec",
+        [NETDEV_KIND_IPOIB] = "ipoib",
 };
 
 DEFINE_STRING_TABLE_LOOKUP(netdev_kind, NetDevKind);

@@ -8,6 +8,7 @@ _Pragma("GCC diagnostic ignored \"-Wimplicit-fallthrough\"")
 #include "netdev/bond.h"
 #include "netdev/bridge.h"
 #include "netdev/geneve.h"
+#include "netdev/ipoib.h"
 #include "netdev/ipvlan.h"
 #include "netdev/macsec.h"
 #include "netdev/macvlan.h"
@@ -217,3 +218,6 @@ WireGuardPeer.PublicKey,                  config_parse_wireguard_public_key,    
 WireGuardPeer.PresharedKey,               config_parse_wireguard_preshared_key,      0,                             0
 WireGuardPeer.PresharedKeyFile,           config_parse_wireguard_preshared_key_file, 0,                             0
 WireGuardPeer.PersistentKeepalive,        config_parse_wireguard_keepalive,          0,                             0
+IPoIB.Mode,                               config_parse_ipoib_mode,                   0,                             offsetof(IPoIB, mode)
+IPoIB.UMCast,                             config_parse_tristate,                     0,                             offsetof(IPoIB, umcast)
+IPoIB.PKey,                               config_parse_uint16,                       0,                             offsetof(IPoIB, pkey)

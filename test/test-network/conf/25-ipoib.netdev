@@ -1,0 +1,6 @@
+[NetDev]
+Kind=ipoib
+Name=ipoib99
+
+[IPoIB]
+Mode=datagram

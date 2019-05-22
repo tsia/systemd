@@ -206,3 +206,7 @@ KeyId=
 Key=
 KeyFile=
 Activate=
+[IPoIB]
+Mode=
+UMCast=
+PKey=

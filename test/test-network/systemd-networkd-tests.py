@@ -261,6 +261,7 @@ class NetworkdNetDevTests(unittest.TestCase, Utilities):
         'ipiptun97',
         'ipiptun98',
         'ipiptun99',
+        'ipoib99',
         'ipvlan99',
         'ipvtap99',
         'isataptun99',
@@ -329,6 +330,7 @@ class NetworkdNetDevTests(unittest.TestCase, Utilities):
         '25-ipip-tunnel-local-any.netdev',
         '25-ipip-tunnel-remote-any.netdev',
         '25-ipip-tunnel.netdev',
+        '25-ipoib.netdev',
         '25-ipvlan.netdev',
         '25-ipvtap.netdev',
         '25-isatap-tunnel.netdev',
@@ -951,6 +953,11 @@ class NetworkdNetDevTests(unittest.TestCase, Utilities):
         self.assertRegex(output, 'RXSC: 8c16456c83a90002, state on')
         self.assertRegex(output, '0: PN [0-9]*, state off, key 02030400000000000000000000000000')
 
+    def test_ipoib(self):
+        self.copy_unit_to_networkd_unit_path('25-ipoib.netdev')
+        self.start_networkd(5)
+
+        self.check_link_exists('ipoib99')
 
 class NetworkdL2TPTests(unittest.TestCase, Utilities):
 

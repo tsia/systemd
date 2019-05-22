@@ -327,6 +327,12 @@ static const NLType rtnl_link_info_data_macsec_types[] = {
         [IFLA_MACSEC_VALIDATION]     = { .type = NETLINK_TYPE_U8 },
 };
 
+static const NLType rtnl_link_info_data_ipoib_types[] = {
+        [IFLA_IPOIB_MODE]            = { .type = NETLINK_TYPE_U16 },
+        [IFLA_IPOIB_UMCAST]          = { .type = NETLINK_TYPE_U16 },
+        [IFLA_IPOIB_PKEY]            = { .type = NETLINK_TYPE_U16 },
+};
+
 /* these strings must match the .kind entries in the kernel */
 static const char* const nl_union_link_info_data_table[] = {
         [NL_UNION_LINK_INFO_DATA_BOND] = "bond",
@@ -357,6 +363,7 @@ static const char* const nl_union_link_info_data_table[] = {
         [NL_UNION_LINK_INFO_DATA_NETDEVSIM] = "netdevsim",
         [NL_UNION_LINK_INFO_DATA_CAN] = "can",
         [NL_UNION_LINK_INFO_DATA_MACSEC] = "macsec",
+        [NL_UNION_LINK_INFO_DATA_IPOIB] = "ipoib",
 };
 
 DEFINE_STRING_TABLE_LOOKUP(nl_union_link_info_data, NLUnionLinkInfoData);
@@ -410,6 +417,8 @@ static const NLTypeSystem rtnl_link_info_data_type_systems[] = {
                                                        .types = rtnl_link_info_data_can_types },
         [NL_UNION_LINK_INFO_DATA_MACSEC] =           { .count = ELEMENTSOF(rtnl_link_info_data_macsec_types),
                                                        .types = rtnl_link_info_data_macsec_types },
+        [NL_UNION_LINK_INFO_DATA_IPOIB] =            { .count = ELEMENTSOF(rtnl_link_info_data_ipoib_types),
+                                                       .types = rtnl_link_info_data_ipoib_types },
 };
 
 static const NLTypeSystemUnion rtnl_link_info_data_type_system_union = {
