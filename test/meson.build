@@ -65,6 +65,9 @@ test_data_files = '''
         test-execute/exec-dynamicuser-fixeduser-games.service
         test-execute/exec-dynamicuser-fixeduser-one-supplementarygroup.service
         test-execute/exec-dynamicuser-fixeduser.service
+        test-execute/exec-dynamicuser-runtimedirectory1.service
+        test-execute/exec-dynamicuser-runtimedirectory2.service
+        test-execute/exec-dynamicuser-runtimedirectory3.service
         test-execute/exec-dynamicuser-statedir-migrate-step1.service
         test-execute/exec-dynamicuser-statedir-migrate-step2.service
         test-execute/exec-dynamicuser-statedir.service
