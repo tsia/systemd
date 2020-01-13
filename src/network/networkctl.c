@@ -717,23 +717,19 @@ static int dump_gateways(
                 Table *table,
                 int ifindex) {
         _cleanup_free_ struct local_address *local = NULL;
+        _cleanup_free_ char *buf = NULL;
         int r, n, i;
 
         assert(rtnl);
         assert(table);
 
         n = local_gateways(rtnl, ifindex, AF_UNSPEC, &local);
-        if (n < 0)
+        if (n <= 0)
                 return n;
 
         for (i = 0; i < n; i++) {
                 _cleanup_free_ char *gateway = NULL, *description = NULL, *with_description = NULL;
-
-                r = table_add_many(table,
-                                   TABLE_EMPTY,
-                                   TABLE_STRING, i == 0 ? "Gateway:" : "");
-                if (r < 0)
-                        return table_log_add_error(r);
+                char name[IF_NAMESIZE+1];
 
                 r = in_addr_to_string(local[i].family, &local[i].address, &gateway);
                 if (r < 0)
@@ -741,26 +737,30 @@ static int dump_gateways(
 
                 r = get_gateway_description(rtnl, hwdb, local[i].ifindex, local[i].family, &local[i].address, &description);
                 if (r < 0)
-                        log_debug_errno(r, "Could not get description of gateway: %m");
+                        log_debug_errno(r, "Could not get description of gateway, ignoring: %m");
 
                 if (description) {
                         with_description = strjoin(gateway, " (", description, ")");
                         if (!with_description)
-                                return -ENOMEM;
+                                return log_oom();
                 }
 
-                /* Show interface name for the entry if we show
-                 * entries for all interfaces */
-                if (ifindex <= 0) {
-                        char name[IF_NAMESIZE+1];
-
-                        r = table_add_cell_stringf(table, NULL, "%s on %s", with_description ?: gateway,
-                                                   format_ifname_full(local[i].ifindex, name, FORMAT_IFNAME_IFINDEX_WITH_PERCENT));
-                } else
-                        r = table_add_cell(table, NULL, TABLE_STRING, with_description ?: gateway);
-                if (r < 0)
-                        return table_log_add_error(r);
+                /* Show interface name for the entry if we show entries for all interfaces */
+                if (!strextend(&buf,
+                               with_description ?: gateway,
+                               ifindex <= 0 ? " on " : "",
+                               ifindex <= 0 ? format_ifname_full(local[i].ifindex, name, FORMAT_IFNAME_IFINDEX_WITH_PERCENT) : "",
+                               "\n",
+                               NULL))
+                        return log_oom();
         }
+
+        r = table_add_many(table,
+                           TABLE_EMPTY,
+                           TABLE_STRING, "Gateway:",
+                           TABLE_STRING, buf);
+        if (r < 0)
+                return table_log_add_error(r);
 
         return 0;
 }
@@ -770,27 +770,22 @@ static int dump_addresses(
                 Table *table,
                 int ifindex) {
 
+        _cleanup_free_ char *dhcp4_address = NULL, *buf = NULL;
         _cleanup_free_ struct local_address *local = NULL;
-        _cleanup_free_ char *dhcp4_address = NULL;
         int r, n, i;
 
         assert(rtnl);
         assert(table);
 
         n = local_addresses(rtnl, ifindex, AF_UNSPEC, &local);
-        if (n < 0)
+        if (n <= 0)
                 return n;
 
         (void) sd_network_link_get_dhcp4_address(ifindex, &dhcp4_address);
 
         for (i = 0; i < n; i++) {
                 _cleanup_free_ char *pretty = NULL;
-
-                r = table_add_many(table,
-                                   TABLE_EMPTY,
-                                   TABLE_STRING, i == 0 ? "Address:" : "");
-                if (r < 0)
-                        return table_log_add_error(r);
+                char name[IF_NAMESIZE+1];
 
                 r = in_addr_to_string(local[i].family, &local[i].address, &pretty);
                 if (r < 0)
@@ -805,16 +800,21 @@ static int dump_addresses(
                                 return log_oom();
                 }
 
-                if (ifindex <= 0) {
-                        char name[IF_NAMESIZE+1];
-
-                        r = table_add_cell_stringf(table, NULL, "%s on %s", pretty,
-                                                   format_ifname_full(local[i].ifindex, name, FORMAT_IFNAME_IFINDEX_WITH_PERCENT));
-                } else
-                        r = table_add_cell(table, NULL, TABLE_STRING, pretty);
-                if (r < 0)
-                        return table_log_add_error(r);
+                if (!strextend(&buf,
+                               pretty,
+                               ifindex <= 0 ? " on " : "",
+                               ifindex <= 0 ? format_ifname_full(local[i].ifindex, name, FORMAT_IFNAME_IFINDEX_WITH_PERCENT) : "",
+                               "\n",
+                               NULL))
+                        return log_oom();
         }
+
+        r = table_add_many(table,
+                           TABLE_EMPTY,
+                           TABLE_STRING, "Address:",
+                           TABLE_STRING, buf);
+        if (r < 0)
+                return table_log_add_error(r);
 
         return 0;
 }
